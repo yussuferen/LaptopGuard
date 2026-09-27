@@ -1,6 +1,6 @@
 # LaptopGuard 
 
-An open-source physical security system for Windows 10/11 laptops that protects your device when you step away.
+Open-source theft deterrent for Windows 10/11 laptops. If someone touches, unplugs, or walks off with your device while you're away, LaptopGuard captures a photo and alerts you in real time via Telegram.
 
 ---
 
@@ -36,9 +36,9 @@ dotnet run
 
 ## Setting Up Telegram
 
-1. **Create a bot:** Open Telegram and message [@BotFather](https://t.me/botfather). Send `/newbot` and follow the prompts (choose a name and a username for your bot). BotFather will reply with a **Bot Token** — copy it.
-2. **Get your Chat ID:** Message [@userinfobot](https://t.me/userinfobot) on Telegram — it will reply with your numeric **Chat ID**.
-3. **Start a conversation with your bot:** Search for your bot's username on Telegram and send it any message (e.g. `/start`). This is required — Telegram bots can't message users who haven't messaged them first.
+1. **Create a bot:** Open Telegram and message [@BotFather](https://t.me/botfather). Send `/newbot` and follow the prompts. BotFather will reply with a **Bot Token** — copy it.
+2. **Get your Chat ID:** Message [@userinfobot](https://t.me/userinfobot) on Telegram — it will reply with your **Chat ID**.
+3. **Start a conversation with your bot:** Search for your bot's username on Telegram and click start (`/start`). This is required — Telegram bots can't message users who haven't messaged them first.
 4. Paste both values into LaptopGuard's Settings menu (or `config.json`) as described below.
 
 ---
