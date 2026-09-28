@@ -2,6 +2,7 @@ config.json
 **/config.json
 !config.example.json
 !**/config.example.json
+.power_recovery
 [Bb]in/
 [Oo]bj/
 [Aa]rtifacts/

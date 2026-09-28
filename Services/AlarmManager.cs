@@ -73,6 +73,7 @@ public sealed class AlarmManager : IDisposable
         StopCountdown();
         SetState(AlarmState.Armed);
 
+        SleepPreventionService.Enable();
         _telegramService.Start();
         StartSensors();
     }
@@ -82,6 +83,7 @@ public sealed class AlarmManager : IDisposable
         StopCountdown();
         StopSensors();
         _telegramService.Stop();
+        SleepPreventionService.Disable();
         SetState(AlarmState.Disarmed);
     }
 
@@ -181,6 +183,7 @@ public sealed class AlarmManager : IDisposable
     {
         StopCountdown();
         StopSensors();
+        SleepPreventionService.Disable();
 
         foreach (var sensor in _sensors)
         {
