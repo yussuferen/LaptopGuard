@@ -201,8 +201,8 @@ public sealed class SettingsForm : Form
             Text = "Cancel",
             Size = new Size(btnW, btnH),
             Location = new Point(formW - pad - btnW - 2, y),
-            DialogResult = DialogResult.Cancel
         };
+        _btnCancel.Click += (_, _) => Close();
         Controls.Add(_btnCancel);
 
         _btnSave = new Button
@@ -210,7 +210,6 @@ public sealed class SettingsForm : Form
             Text = "Save",
             Size = new Size(btnW, btnH),
             Location = new Point(_btnCancel.Left - btnW - 8, y),
-            DialogResult = DialogResult.OK
         };
         _btnSave.Click += OnSaveClick;
         Controls.Add(_btnSave);
