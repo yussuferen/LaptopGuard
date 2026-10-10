@@ -2,7 +2,6 @@
 
 A Windows tray app I built for my own use: when I step away from my laptop in a library or café, it watches for tampering (lid close, power unplug, USB removal) and alerts my phone via Telegram.
 
----
 
 ## Features
 
@@ -16,17 +15,14 @@ A Windows tray app I built for my own use: when I step away from my laptop in a 
 - **Visual overlay** — a thin click-through red border appears around the screen while armed.
 - **Tamper sensors** — detects lid close, power cable disconnection, and USB device removal. Bluetooth disconnects and virtual audio devices do not trigger the USB sensor.
 - **Instant alerts** — captures a webcam photo and sends it to Telegram with a timestamp and reason.
->>>>>>> 4841a79 (Bug-Fix)
 - **Autostart support** — optionally launch with Windows, toggleable from Settings.
 
----
 
 ## Requirements
 
 - Windows 11 or Windows 10
 - .NET 10.0 Runtime / SDK
 
----
 
 ## Install & Run
 
@@ -37,7 +33,6 @@ dotnet build
 dotnet run
 ```
 
----
 
 ## Setting Up Telegram
 
@@ -46,7 +41,6 @@ dotnet run
 3. **Start a conversation with your bot:** Search for your bot's username on Telegram and click start (`/start`). This is required — Telegram bots can't message users who haven't messaged them first.
 4. Paste both values into LaptopGuard's Settings menu (or `config.json`) as described below.
 
----
 
 ## Configuration
 
@@ -76,12 +70,10 @@ dotnet run
      "startWithWindows": false
    }
    ```
-<<<<<<< HEAD
----
+
 
 ## Limitations
 
 - **Needs an internet connection.** Alerts are sent over Telegram, so if the laptop leaves the network it was connected to (e.g. the library Wi-Fi), no message can be sent. Alerts only go out while the device is still online, which is usually the moment of the trigger itself (unplugging, closing the lid).
 - **Deterrent, not protection.** Someone who shuts down or wipes the machine can bypass it.
 =======
->>>>>>> 4841a79 (Bug-Fix)
