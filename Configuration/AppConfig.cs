@@ -13,9 +13,6 @@ public class AppConfig
     [JsonPropertyName("activeSensors")]
     public List<string> ActiveSensors { get; set; } = ["LidSensor", "PowerCableSensor", "UsbSensor"];
 
-    [JsonPropertyName("silentMode")]
-    public bool SilentMode { get; set; } = true;
-
     [JsonPropertyName("hotkey")]
     public string Hotkey { get; set; } = "Ctrl+Alt+L";
 

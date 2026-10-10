@@ -40,6 +40,40 @@ public sealed class AlarmManager : IDisposable
         return registered;
     }
 
+    public bool ApplySettings()
+    {
+        AlarmState previousState = _state;
+        Disarm();
+
+        try
+        {
+            foreach (var sensor in _sensors)
+            {
+                sensor.Dispose();
+            }
+
+            _sensors.Clear();
+            BuildSensors();
+            bool hotkeyRegistered = Initialize();
+
+            if (previousState == AlarmState.Armed)
+            {
+                Arm();
+            }
+            else if (previousState == AlarmState.Arming)
+            {
+                StartArming();
+            }
+
+            return hotkeyRegistered;
+        }
+        catch
+        {
+            Disarm();
+            throw;
+        }
+    }
+
     public void Toggle()
     {
         switch (_state)

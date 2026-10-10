@@ -18,7 +18,7 @@ public sealed class UsbSensor : ISensor
         var query = new WqlEventQuery(
             "__InstanceDeletionEvent",
             TimeSpan.FromSeconds(2),
-            "TargetInstance ISA 'Win32_USBControllerDevice'");
+            @"TargetInstance ISA 'Win32_PnPEntity' AND TargetInstance.DeviceID LIKE 'USB\\%'");
 
         _watcher = new ManagementEventWatcher(query);
         _watcher.EventArrived += OnUsbDeviceRemoved;
@@ -46,32 +46,21 @@ public sealed class UsbSensor : ISensor
     {
         if (!IsActive) return;
 
-        string deviceInfo = "unknown device";
-
         try
         {
             var targetInstance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
-            string? dependent = targetInstance["Dependent"]?.ToString();
+            string? deviceId = targetInstance["DeviceID"]?.ToString();
+            string? deviceClass = targetInstance["PNPClass"]?.ToString();
+            string? service = targetInstance["Service"]?.ToString();
 
-            if (!string.IsNullOrEmpty(dependent))
-            {
-                int idStart = dependent.IndexOf("DeviceID=\"", StringComparison.OrdinalIgnoreCase);
-                if (idStart >= 0)
-                {
-                    idStart += "DeviceID=\"".Length;
-                    int idEnd = dependent.IndexOf('"', idStart);
-                    if (idEnd > idStart)
-                    {
-                        deviceInfo = dependent[idStart..idEnd];
-                    }
-                }
-            }
+            if (!UsbDeviceFilter.ShouldTrigger(deviceId, deviceClass, service)) return;
+
+            TriggerDetected?.Invoke($"USB device removed: {deviceId}");
         }
-        catch
+        catch (ManagementException)
         {
+            // An unreadable event is not evidence that a physical USB device was removed.
         }
-
-        TriggerDetected?.Invoke($"USB device removed: {deviceInfo}");
     }
 
     public void Dispose()

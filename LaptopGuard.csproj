@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Tests\**\*.cs" />
     <EmbeddedResource Include="Resources\icon_gray.ico" />
     <EmbeddedResource Include="Resources\icon_green.ico" />
     <EmbeddedResource Include="Resources\icon_red.ico" />

@@ -9,8 +9,14 @@ A Windows tray app I built for my own use: when I step away from my laptop in a 
 - **Runs in the background** — lives in the system tray, no console window, no taskbar clutter.
 - **Minimal idle footprint** — sensors, Telegram polling, and camera access are fully off while disarmed.
 - **Global hotkey** — arm/disarm with a customizable shortcut (default `Ctrl+Alt+L`).
+<<<<<<< HEAD
 - **Tamper sensors** — detects lid close, power cable disconnection, and USB device removal.
 - **Tamper alerts** — captures a webcam photo and sends it to Telegram with a timestamp and reason.
+=======
+- **Visual overlay** — a thin click-through red border appears around the screen while armed.
+- **Tamper sensors** — detects lid close, power cable disconnection, and USB device removal. Bluetooth disconnects and virtual audio devices do not trigger the USB sensor.
+- **Instant alerts** — captures a webcam photo and sends it to Telegram with a timestamp and reason.
+>>>>>>> 4841a79 (Bug-Fix)
 - **Autostart support** — optionally launch with Windows, toggleable from Settings.
 
 ---
@@ -65,15 +71,17 @@ dotnet run
        "PowerCableSensor",
        "UsbSensor"
      ],
-     "silentMode": true,
      "hotkey": "Ctrl+Alt+L",
      "armCountdownSeconds": 3,
      "startWithWindows": false
    }
    ```
+<<<<<<< HEAD
 ---
 
 ## Limitations
 
 - **Needs an internet connection.** Alerts are sent over Telegram, so if the laptop leaves the network it was connected to (e.g. the library Wi-Fi), no message can be sent. Alerts only go out while the device is still online, which is usually the moment of the trigger itself (unplugging, closing the lid).
 - **Deterrent, not protection.** Someone who shuts down or wipes the machine can bypass it.
+=======
+>>>>>>> 4841a79 (Bug-Fix)

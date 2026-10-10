@@ -6,7 +6,6 @@
     "PowerCableSensor",
     "UsbSensor"
   ],
-  "silentMode": true,
   "hotkey": "Ctrl+Alt+L",
   "armCountdownSeconds": 3,
   "startWithWindows": false

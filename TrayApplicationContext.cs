@@ -25,6 +25,8 @@ public class TrayApplicationContext : ApplicationContext
     private readonly ToolStripMenuItem _statusItem;
     private readonly ToolStripMenuItem _telegramItem;
 
+    private readonly SemaphoreSlim _captureLock = new(1, 1);
+
     public TrayApplicationContext(ConfigManager configManager)
     {
         _configManager = configManager;
@@ -120,43 +122,51 @@ public class TrayApplicationContext : ApplicationContext
 
     private async Task CaptureAndNotifyAsync(string reason)
     {
-        var telegram = _alarmManager.TelegramService;
-        string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
+        await _captureLock.WaitAsync();
         try
         {
-            using var photoStream = CameraService.CaptureFrameAsStream();
+            var telegram = _alarmManager.TelegramService;
+            string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
-            if (photoStream != null)
-            {
-                string caption =
-                    $"🚨 *ALARM TRIGGERED*\n" +
-                    $"📋 *Reason:* {EscapeMarkdown(reason)}\n" +
-                    $"🕐 *Time:* {timestamp}";
-
-                await telegram.SendPhotoAsync(photoStream, caption);
-            }
-            else
-            {
-                string message =
-                    $"🚨 *ALARM TRIGGERED*\n" +
-                    $"📋 *Reason:* {EscapeMarkdown(reason)}\n" +
-                    $"🕐 *Time:* {timestamp}\n" +
-                    $"📷 _Camera not available_";
-
-                await telegram.SendMessageAsync(message);
-            }
-        }
-        catch
-        {
             try
             {
-                await telegram.SendMessageAsync(
-                    $"🚨 ALARM TRIGGERED: {reason} ({timestamp})");
+                using var photoStream = CameraService.CaptureFrameAsStream();
+
+                if (photoStream != null)
+                {
+                    string caption =
+                        $"🚨 *ALARM TRIGGERED*\n" +
+                        $"📋 *Reason:* {EscapeMarkdown(reason)}\n" +
+                        $"🕐 *Time:* {timestamp}";
+
+                    await telegram.SendPhotoAsync(photoStream, caption);
+                }
+                else
+                {
+                    string message =
+                        $"🚨 *ALARM TRIGGERED*\n" +
+                        $"📋 *Reason:* {EscapeMarkdown(reason)}\n" +
+                        $"🕐 *Time:* {timestamp}\n" +
+                        $"📷 _Camera not available_";
+
+                    await telegram.SendMessageAsync(message);
+                }
             }
             catch
             {
+                try
+                {
+                    await telegram.SendMessageAsync(
+                        $"🚨 ALARM TRIGGERED: {reason} ({timestamp})");
+                }
+                catch
+                {
+                }
             }
+        }
+        finally
+        {
+            _captureLock.Release();
         }
     }
 
@@ -250,15 +260,22 @@ public class TrayApplicationContext : ApplicationContext
 
     private void OnSettingsSaved()
     {
-        _alarmManager.Dispose();
+        bool hotkeyRegistered;
+        try
+        {
+            hotkeyRegistered = _alarmManager.ApplySettings();
+        }
+        catch (Exception ex)
+        {
+            _trayIcon.ShowBalloonTip(
+                5000,
+                "LaptopGuard",
+                $"Could not apply settings. Protection is off. {ex.Message}",
+                ToolTipIcon.Error);
+            return;
+        }
 
-        _alarmManager = new AlarmManager(_configManager);
-        _alarmManager.StateChanged += OnAlarmStateChanged;
-        _alarmManager.CountdownTick += OnCountdownTick;
-        _alarmManager.TriggerDetected += OnTriggerDetected;
-        _alarmManager.TelegramService.ConnectionStatusChanged += OnTelegramConnectionChanged;
-
-        if (!_alarmManager.Initialize())
+        if (!hotkeyRegistered)
         {
             _trayIcon.ShowBalloonTip(
                 3000,
@@ -295,6 +312,7 @@ public class TrayApplicationContext : ApplicationContext
             _iconGray.Dispose();
             _iconGreen.Dispose();
             _iconRed.Dispose();
+            _captureLock.Dispose();
         }
 
         base.Dispose(disposing);

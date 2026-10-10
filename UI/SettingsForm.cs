@@ -16,7 +16,6 @@ public sealed class SettingsForm : Form
 
     private readonly TextBox _txtHotkey;
     private readonly NumericUpDown _nudCountdown;
-    private readonly CheckBox _chkSilentMode;
     private readonly CheckBox _chkStartWithWindows;
 
     private readonly Button _btnSave;
@@ -26,6 +25,7 @@ public sealed class SettingsForm : Form
 
     public SettingsForm(ConfigManager configManager)
     {
+        SuspendLayout();
         _configManager = configManager;
 
         Text = "LaptopGuard — Settings";
@@ -34,13 +34,14 @@ public sealed class SettingsForm : Form
         MinimizeBox = false;
         StartPosition = FormStartPosition.CenterScreen;
         ShowInTaskbar = true;
+        AutoScaleDimensions = new SizeF(96f, 96f);
         AutoScaleMode = AutoScaleMode.Dpi;
         Font = new Font("Segoe UI", 9.5f);
 
         int pad = 14;
         int innerPad = 12;
         int rowH = 32;
-        int labelW = 105;
+        int labelW = 140;
         int groupW = 430;
         int formW = groupW + pad * 2 + 2;
 
@@ -133,7 +134,7 @@ public sealed class SettingsForm : Form
         {
             Text = "Alarm & System",
             Location = new Point(pad, y),
-            Size = new Size(groupW, 20 + rowH * 4 + innerPad)
+            Size = new Size(groupW, 20 + rowH * 3 + innerPad)
         };
 
         gy = 24;
@@ -163,22 +164,13 @@ public sealed class SettingsForm : Form
         _nudCountdown = new NumericUpDown
         {
             Location = new Point(innerPad + labelW, gy),
-            Size = new Size(70, 24),
+            Size = new Size(100, 24),
+            TextAlign = HorizontalAlignment.Right,
             Minimum = 1,
             Maximum = 30,
             Value = 3
         };
         grpAlarm.Controls.Add(_nudCountdown);
-
-        gy += rowH;
-
-        _chkSilentMode = new CheckBox
-        {
-            Text = "Silent mode (no local sound)",
-            Location = new Point(innerPad, gy),
-            AutoSize = true
-        };
-        grpAlarm.Controls.Add(_chkSilentMode);
 
         gy += rowH;
 
@@ -222,6 +214,7 @@ public sealed class SettingsForm : Form
         ClientSize = new Size(formW, y);
 
         LoadFromConfig();
+        ResumeLayout(true);
     }
 
     private void LoadFromConfig()
@@ -237,7 +230,6 @@ public sealed class SettingsForm : Form
 
         _txtHotkey.Text = cfg.Hotkey;
         _nudCountdown.Value = Math.Clamp(cfg.ArmCountdownSeconds, 1, 30);
-        _chkSilentMode.Checked = cfg.SilentMode;
 
         _chkStartWithWindows.Checked = StartupService.IsStartupEnabled();
     }
@@ -256,7 +248,6 @@ public sealed class SettingsForm : Form
 
         cfg.Hotkey = _txtHotkey.Text.Trim();
         cfg.ArmCountdownSeconds = (int)_nudCountdown.Value;
-        cfg.SilentMode = _chkSilentMode.Checked;
 
         bool startWithWindows = _chkStartWithWindows.Checked;
         cfg.StartWithWindows = startWithWindows;
